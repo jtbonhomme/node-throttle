@@ -70,6 +70,20 @@ inherits(Throttle, Transform);
 Parser(Throttle.prototype);
 
 /**
+ * Change the bitrate on the fly
+ *
+ * @param {int} newBps New bitrate in Bytes per second.
+ * @api public
+ */
+
+Throttle.prototype.setBps = function (newBps) {
+  this.bps = newBps;
+  this.totalBytes = 0;
+  this.startTime = Date.now();
+  this.chunkSize = Math.max(1, newBps / 10  | 0);
+};
+
+/**
  * Begins passing through the next "chunk" of bytes.
  *
  * @api private
@@ -91,7 +105,6 @@ Throttle.prototype._onchunk = function (output, done) {
   var self = this;
   var totalSeconds = (Date.now() - this.startTime) / 1000;
   var expected = totalSeconds * this.bps;
-
   function d () {
     self._passthroughChunk();
     done();
@@ -101,6 +114,7 @@ Throttle.prototype._onchunk = function (output, done) {
     // Use this byte count to calculate how many seconds ahead we are.
     var remainder = this.totalBytes - expected;
     var sleepTime = remainder / this.bps * 1000;
+    console.log('STOP: wait for ' + sleepTime/1000 + ' s');
     //console.error('sleep time: %d', sleepTime);
     if (sleepTime > 0) {
       setTimeout(d, sleepTime);
