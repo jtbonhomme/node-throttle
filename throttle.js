@@ -114,7 +114,6 @@ Throttle.prototype._onchunk = function (output, done) {
     // Use this byte count to calculate how many seconds ahead we are.
     var remainder = this.totalBytes - expected;
     var sleepTime = remainder / this.bps * 1000;
-    console.log('STOP: wait for ' + sleepTime/1000 + ' s');
     //console.error('sleep time: %d', sleepTime);
     if (sleepTime > 0) {
       setTimeout(d, sleepTime);
